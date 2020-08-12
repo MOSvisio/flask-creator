@@ -22,7 +22,7 @@ setuptools.setup(
 
    long_description_content_type="text/markdown",
 
-     url="",
+     url="https://github.com/MOSvisio/flask-creator",
 
      packages=setuptools.find_packages(),
 
