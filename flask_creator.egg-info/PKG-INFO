@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
 Name: flask-creator
-Version: 0.1
+Version: 0.1.3
 Summary: A flask tool to quickly create and launch flask app
-Home-page: UNKNOWN
+Home-page: https://github.com/MOSvisio/flask-creator
 Author: Lucas SCHUTZ
 Author-email: lucas.schutz0954@gmail.com
 License: UNKNOWN

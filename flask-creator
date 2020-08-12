@@ -58,11 +58,11 @@ def create(name):
 def run(path):
     """  
     run a flask project.
-    flaskCreator run [path to folder containing __init_.py]
+    flaskCreator run [path to folder containing setup.py]
     """
     os.chdir(path)
-    if not os.path.exists("__init__.py") :
-        print("you need to set the path to your the folder containing __init__.py")
+    if not os.path.exists("setup.py") :
+        print("you need to set the path to your the folder containing setup.py")
         return
 
     os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
