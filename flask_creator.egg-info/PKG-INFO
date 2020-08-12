@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: flask-creator
+Version: 0.1
+Summary: A flask tool to quickly create and launch flask app
+Home-page: UNKNOWN
+Author: Lucas SCHUTZ
+Author-email: lucas.schutz0954@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

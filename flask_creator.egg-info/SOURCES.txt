@@ -1,0 +1,7 @@
+README.md
+flask-creator
+setup.py
+flask_creator.egg-info/PKG-INFO
+flask_creator.egg-info/SOURCES.txt
+flask_creator.egg-info/dependency_links.txt
+flask_creator.egg-info/top_level.txt

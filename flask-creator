@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+
+import click
+import os
+import pip
+import subprocess
+
+def createProcfile(app_name):
+    f = open(os.getcwd() + '/' +app_name + "/Procfile", "x")
+    f.write('web: gunicorn ' + app_name + ':app')
+    f.close()
+
+def createRequirementsFile(app_name):
+    f = open(os.getcwd() + '/' + app_name + "/createRequirementsFile.sh", "x")
+    f.write('#!/bin/bash \n\nif command -v pip3 \nthen\npip3 freeze > requirements.txt\nelse\necho "pip3 is not installed, install it and run : pip3 freeze > requirements.txt"\nfi')
+    f.close()
+
+@click.group()
+def flaskCreator():
+    """ Some basic command to quickly create and launch flask app """
+
+@flaskCreator.command()
+@click.argument("name")
+def create(name):
+    """ 
+    create a new flask project. 
+    flaskCreator create [name of your application] 
+    """
+    print("creating new project " + name)
+    try:
+        os.mkdir(os.getcwd() + '/' + name)
+    except FileExistsError:
+        print("this folder already exist")
+    
+    f = open(name + "/setup.py", "x")
+    f.write('from setuptools import setup\n\nsetup(\n\tname="' + name + '",\n\tpackages=["' + name + '"],\n\tinclude_package_data=True,\n\tinstall_requires=[\n\t\t"flask",\n\t\t"flask_sqlalchemy"\n\t],\n)')
+    f.close()
+
+    f = open(name + "/run.sh", "x")
+    f.write('#!/bin/bash \nBASEDIR=$(dirname "$0")\ncd $BASEDIR\n\nexport FLASK_APP=' + name +'\nexport FLASK_ENV=development\nflask run')
+    f.close() 
+
+    createProcfile(name)
+
+    os.mkdir(os.getcwd() + '/' + name + '/' + name)
+
+    f = open(name + '/' + name + '/__init__.py', "x")
+    f.write('from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\n\napp.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"\n\ndb = SQLAlchemy(app)\n@app.route("/")\ndef index():\n\treturn "welcome to your new project"')
+    f.close()
+
+    createRequirementsFile(name)
+
+    os.chdir(name)
+    os.system("python3 -m venv venv")
+
+@flaskCreator.command()
+@click.argument("path")
+def run(path):
+    """  
+    run a flask project.
+    flaskCreator run [path to folder containing __init_.py]
+    """
+    os.chdir(path)
+    if not os.path.exists("__init__.py") :
+        print("you need to set the path to your the folder containing __init__.py")
+        return
+
+    os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
+    os.environ["FLASK_ENV"]="development"
+    os.system("flask run")
+
+@flaskCreator.command()
+@click.argument("path")
+def install(path):
+    """  
+    install the dependance of the project, you can launch the virtualenv before. 
+    flaskCreator install [path to folder containing setup.py] 
+    """
+    
+    os.chdir(path)
+    if not os.path.exists("setup.py") :
+        print("you need to set the path to your the folder containing setup.py")
+        return
+
+    os.system("pip3 install -e .")
+
+if __name__ == "__main__":
+    flaskCreator()
