@@ -3,6 +3,7 @@
 import click
 import os
 import pip
+import sys
 import subprocess
 
 def createProcfile(app_name):
@@ -10,48 +11,68 @@ def createProcfile(app_name):
     f.write('web: gunicorn ' + app_name + ':app')
     f.close()
 
-def createRequirementsFile(app_name):
-    f = open(os.getcwd() + '/' + app_name + "/createRequirementsFile.sh", "x")
-    f.write('#!/bin/bash \n\nif command -v pip3 \nthen\npip3 freeze > requirements.txt\nelse\necho "pip3 is not installed, install it and run : pip3 freeze > requirements.txt"\nfi')
-    f.close()
-
 @click.group()
 def flaskCreator():
     """ Some basic command to quickly create and launch flask app """
 
+def requirements(path):
+    os.chdir(path)
+    if not os.getenv('VIRTUAL_ENV'):
+        text = ""
+
+        while text != 'y' and text != 'n' :
+            text = input("You are not in a virtual environment are you sure to do that ? y/n : ")
+
+        if text == 'n' :
+            return;       
+        
+    if os.system("pip3 freeze > requirements.txt") != 0 :
+        if os.system("pip freeze > requirements.txt") != 0 :
+            print("could not create the requirements.txt file")
+
 @flaskCreator.command()
-@click.argument("name")
-def create(name):
-    """ 
-    create a new flask project. 
-    flaskCreator create [name of your application] 
-    """
-    print("creating new project " + name)
-    try:
-        os.mkdir(os.getcwd() + '/' + name)
-    except FileExistsError:
-        print("this folder already exist")
-    
-    f = open(name + "/setup.py", "x")
-    f.write('from setuptools import setup\n\nsetup(\n\tname="' + name + '",\n\tpackages=["' + name + '"],\n\tinclude_package_data=True,\n\tinstall_requires=[\n\t\t"flask",\n\t\t"flask_sqlalchemy"\n\t],\n)')
-    f.close()
+@click.option("--app", 'commandType', flag_value='app', default=True, help='[Default] Create a new flask application')
+@click.option("--require", 'commandType', flag_value='require', help='Create a requirements.txt file')
+@click.option("--page", 'commandType', flag_value='page', help='not implemented yet, will create a basic html page')
+def create(commandType):
 
-    f = open(name + "/run.sh", "x")
-    f.write('#!/bin/bash \nBASEDIR=$(dirname "$0")\ncd $BASEDIR\n\nexport FLASK_APP=' + name +'\nexport FLASK_ENV=development\nflask run')
-    f.close() 
+    """ A command to create a flask app or different files """
 
-    createProcfile(name)
+    if commandType == 'require' :
+        requirements('.')
 
-    os.mkdir(os.getcwd() + '/' + name + '/' + name)
+    if commandType == 'app' :
 
-    f = open(name + '/' + name + '/__init__.py', "x")
-    f.write('from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\n\napp.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"\n\ndb = SQLAlchemy(app)\n@app.route("/")\ndef index():\n\treturn "welcome to your new project"')
-    f.close()
+        name = input("What is the name of your application : ")
 
-    createRequirementsFile(name)
+        print("creating new project " + name)
+        try:
+            os.mkdir(os.getcwd() + '/' + name)
+        except FileExistsError:
+            print("this folder already exist")
+        
+        f = open(name + "/setup.py", "x")
+        f.write('from setuptools import setup\n\nsetup(\n\tname="' + name + '",\n\tpackages=["' + name + '"],\n\tinclude_package_data=True,\n\tinstall_requires=[\n\t\t"flask",\n\t\t"flask_sqlalchemy"\n\t],\n)')
+        f.close()
 
-    os.chdir(name)
-    os.system("python3 -m venv venv")
+        f = open(name + "/run.sh", "x")
+        f.write('#!/bin/bash \nBASEDIR=$(dirname "$0")\ncd $BASEDIR\n\nexport FLASK_APP=' + name +'\nexport FLASK_ENV=development\nflask run')
+        f.close() 
+
+        createProcfile(name)
+
+        os.mkdir(os.getcwd() + '/' + name + '/' + name)
+
+        f = open(name + '/' + name + '/__init__.py', "x")
+        f.write('from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\n\napp.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"\n\ndb = SQLAlchemy(app)\n@app.route("/")\ndef index():\n\treturn "welcome to your new project"')
+        f.close()
+
+        os.chdir(name)
+        if os.system("python3 -m venv venv") != 0 :
+            print("python3-venv is not installed, trying with python")
+            if os.system("python -m venv venv") != 0 :
+                print("couldn't installed the virtualenv please install python3-venv")
+
 
 @flaskCreator.command()
 @click.argument("path")
@@ -67,7 +88,9 @@ def run(path):
 
     os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
     os.environ["FLASK_ENV"]="development"
-    os.system("flask run")
+    if os.system("flask run") != 0 :
+        "flask is not installed, make sure to have run the install command"
+
 
 @flaskCreator.command()
 @click.argument("path")
@@ -82,7 +105,10 @@ def install(path):
         print("you need to set the path to your the folder containing setup.py")
         return
 
-    os.system("pip3 install -e .")
+    if os.system("pip3 install -e .") != 0 :
+        print("pip3 is not installed ! tying to use pip")
+        if os.system("pip install -e .") != 0 :
+            print("pip is not installed !")
 
 if __name__ == "__main__":
     flaskCreator()

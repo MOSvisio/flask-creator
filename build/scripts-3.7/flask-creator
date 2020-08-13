@@ -3,6 +3,7 @@
 import click
 import os
 import pip
+import sys
 import subprocess
 
 def createProcfile(app_name):
@@ -18,6 +19,22 @@ def createRequirementsFile(app_name):
 @click.group()
 def flaskCreator():
     """ Some basic command to quickly create and launch flask app """
+
+@flaskCreator.command()
+def requirements():
+
+    if not os.getenv('VIRTUAL_ENV'):
+        text = ""
+
+        while text != 'y' and text != 'n' :
+            text = input("You are not in a virtual environment are you sure to do that ? y/n : ")
+
+        if text == 'n' :
+            return;       
+        
+    if os.system("pip3 freeze > requirements.txt") != 0 :
+        if os.system("pip freeze > requirements.txt") != 0 :
+            print("could not create the requirements.txt file")
 
 @flaskCreator.command()
 @click.argument("name")
@@ -51,7 +68,11 @@ def create(name):
     createRequirementsFile(name)
 
     os.chdir(name)
-    os.system("python3 -m venv venv")
+    if os.system("python3 -m venv venv") != 0 :
+        print("python3-venv is not installed, trying with python")
+        if os.system("python -m venv venv") != 0 :
+            print("couldn't installed the virtualenv please install python3-venv")
+
 
 @flaskCreator.command()
 @click.argument("path")
@@ -67,7 +88,9 @@ def run(path):
 
     os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
     os.environ["FLASK_ENV"]="development"
-    os.system("flask run")
+    if os.system("flask run") != 0 :
+        "flask is not installed, make sure to have run the install command"
+
 
 @flaskCreator.command()
 @click.argument("path")
@@ -82,7 +105,10 @@ def install(path):
         print("you need to set the path to your the folder containing setup.py")
         return
 
-    os.system("pip3 install -e .")
+    if os.system("pip3 install -e .") != 0 :
+        print("pip3 is not installed ! tying to use pip")
+        if os.system("pip install -e .") != 0 :
+            print("pip is not installed !")
 
 if __name__ == "__main__":
     flaskCreator()
