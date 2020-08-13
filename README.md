@@ -6,13 +6,16 @@ pip3 install flask-creator
 # How to use 
 
 - create a new flask application :
+
 flask-creator create [name of your application]  
 
 - run your flask application :
+
 flask-creator run [root of you application*]
 * currently the path of the folder containing setup.py
 
 - install the dependance defined in the setup.py file of your flask application :
+
 flask-creator install [root of you application*]
 * currently the path of the folder containing setup.py
 
