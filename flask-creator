@@ -6,8 +6,14 @@ import pip
 import sys
 import subprocess
 
+def checkForSetupPy(path):
+    if not os.path.exists("setup.py") :
+        print("you need to run this command from the folder containing setup.py")
+        return False
+    return True
+
 def createProcfile(app_name):
-    f = open(os.getcwd() + '/' +app_name + "/Procfile", "x")
+    f = open(os.getcwd() + '/' + app_name + "/Procfile", "x")
     f.write('web: gunicorn ' + app_name + ':app')
     f.close()
 
@@ -17,23 +23,24 @@ def flaskCreator():
 
 def requirements(path):
     os.chdir(path)
-    if not os.getenv('VIRTUAL_ENV'):
-        text = ""
+    if checkForSetupPy(path):
+        if not os.getenv('VIRTUAL_ENV'):
+            text = ""
 
-        while text != 'y' and text != 'n' :
-            text = input("You are not in a virtual environment are you sure to do that ? y/n : ")
+            while text != 'y' and text != 'n' :
+                text = input("You are not in a virtual environment are you sure to do that ? y/n : ")
 
-        if text == 'n' :
-            return       
+            if text == 'n' :
+                return       
 
-    if os.system("pip3 freeze > requirements.txt") != 0 :
-        if os.system("pip freeze > requirements.txt") != 0 :
-            print("could not create the requirements.txt file")
+        if os.system("pip3 freeze > requirements.txt") != 0 :
+            if os.system("pip freeze > requirements.txt") != 0 :
+                print("could not create the requirements.txt file")
 
 @flaskCreator.command()
 @click.argument("name")
-@click.option("--app", 'commandType', flag_value='app', default=True, help='[Default] Create a new flask application')
-@click.option("--page", 'commandType', flag_value='page', help='not implemented yet, will create a basic html page')
+@click.option("--app", 'commandType', flag_value='app', help='Create a new flask application')
+@click.option("--page", 'commandType', flag_value='page', help='Create a basic html page')
 def create(commandType, name):
 
     """ A command to create a flask app or different files """
@@ -68,6 +75,24 @@ def create(commandType, name):
             if os.system("python -m venv venv") != 0 :
                 print("couldn't installed the virtualenv please install python3-venv")
 
+    elif commandType == 'page':
+        if checkForSetupPy('.'):
+            directory = './' + os.path.basename(os.getcwd()) + '/pages'
+            print(directory)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+            if not os.path.exists(directory + '/' + name + ".html"):
+                f = open(directory + '/' + name + ".html", 'x')
+                htmlText = "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <title>$name</title>\n</head>\n<body>\n  <p>Welcome to your new page : $name</p>\n</body>\n</html>"
+                f.write(htmlText.replace("$name", name))
+                f.close()
+            else:
+                print("This page already exist")
+
+    else :
+        print("Option missing !")
+
 @flaskCreator.command()
 @click.option("--require", 'commandType', flag_value='require', help='Create a requirements.txt file')
 def generate(commandType):
@@ -79,40 +104,33 @@ def generate(commandType):
         requirements('.')
 
 @flaskCreator.command()
-@click.argument("path")
-def run(path):
+def run():
     """  
     run a flask project.
-    flask-creator run [path to folder containing setup.py]
+    flask-creator run 
     """
-    os.chdir(path)
-    if not os.path.exists("setup.py") :
-        print("you need to set the path to your the folder containing setup.py")
-        return
 
-    os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
-    os.environ["FLASK_ENV"]="development"
-    if os.system("flask run") != 0 :
-        "flask is not installed, make sure to have run the install command"
+    if checkForSetupPy("."):
+        os.environ["FLASK_APP"] = os.path.basename(os.getcwd())
+        os.environ["FLASK_ENV"]="development"
+        if os.system("flask run") != 0 :
+            "flask is not installed, run the install command"
 
 
 @flaskCreator.command()
-@click.argument("path")
-def install(path):
+def install():
     """  
     install the dependance of the project, you can launch the virtualenv before. 
-    flask-creator install [path to folder containing setup.py] 
+    flask-creator install
     """
     
-    os.chdir(path)
-    if not os.path.exists("setup.py") :
-        print("you need to set the path to your the folder containing setup.py")
-        return
+    os.chdir(".")
+    if checkForSetupPy("."):
 
-    if os.system("pip3 install -e .") != 0 :
-        print("pip3 is not installed ! tying to use pip")
-        if os.system("pip install -e .") != 0 :
-            print("pip is not installed !")
+        if os.system("pip3 install -e .") != 0 :
+            print("pip3 is not installed ! tying to use pip")
+            if os.system("pip install -e .") != 0 :
+                print("pip is not installed !")
 
 if __name__ == "__main__":
     flaskCreator()

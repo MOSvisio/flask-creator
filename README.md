@@ -10,6 +10,11 @@ pip3 install flask-creator
 flask-creator create --app [name of your application]  
 
 
+- create a new simple html page :
+
+flask-creator create --page [name of your page]  
+
+
 
 - create requirements.txt file : 
 
@@ -17,19 +22,16 @@ flask-creator generate --require
 
 
 
-- run your flask application :
+- run your flask application (run this command from the folder containing setup.py):
 
-flask-creator run [root of you application (1)]
-
-
-
-- install the dependance defined in the setup.py file of your flask application :
-
-flask-creator install [root of you application (1)]
+flask-creator run 
 
 
 
-(1) currently the path of the folder containing setup.py
+- install the dependance defined in the setup.py file of your flask application (run this command from the folder containing setup.py):
+
+flask-creator install 
+
 
 
 
