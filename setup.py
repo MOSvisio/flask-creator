@@ -8,7 +8,7 @@ setuptools.setup(
 
      name='flask-creator',  
 
-     version='0.1.5',
+     version='0.1.6',
 
      scripts=['flask-creator'] ,
 

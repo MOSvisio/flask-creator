@@ -24,26 +24,21 @@ def requirements(path):
             text = input("You are not in a virtual environment are you sure to do that ? y/n : ")
 
         if text == 'n' :
-            return;       
-        
+            return       
+
     if os.system("pip3 freeze > requirements.txt") != 0 :
         if os.system("pip freeze > requirements.txt") != 0 :
             print("could not create the requirements.txt file")
 
 @flaskCreator.command()
+@click.argument("name")
 @click.option("--app", 'commandType', flag_value='app', default=True, help='[Default] Create a new flask application')
-@click.option("--require", 'commandType', flag_value='require', help='Create a requirements.txt file')
 @click.option("--page", 'commandType', flag_value='page', help='not implemented yet, will create a basic html page')
-def create(commandType):
+def create(commandType, name):
 
     """ A command to create a flask app or different files """
 
-    if commandType == 'require' :
-        requirements('.')
-
     if commandType == 'app' :
-
-        name = input("What is the name of your application : ")
 
         print("creating new project " + name)
         try:
@@ -73,13 +68,22 @@ def create(commandType):
             if os.system("python -m venv venv") != 0 :
                 print("couldn't installed the virtualenv please install python3-venv")
 
+@flaskCreator.command()
+@click.option("--require", 'commandType', flag_value='require', help='Create a requirements.txt file')
+def generate(commandType):
+
+    """ Create specific files, like requirements.txt """
+
+    if commandType == 'require' :
+        print("creating requirements.txt file")
+        requirements('.')
 
 @flaskCreator.command()
 @click.argument("path")
 def run(path):
     """  
     run a flask project.
-    flaskCreator run [path to folder containing setup.py]
+    flask-creator run [path to folder containing setup.py]
     """
     os.chdir(path)
     if not os.path.exists("setup.py") :
@@ -97,7 +101,7 @@ def run(path):
 def install(path):
     """  
     install the dependance of the project, you can launch the virtualenv before. 
-    flaskCreator install [path to folder containing setup.py] 
+    flask-creator install [path to folder containing setup.py] 
     """
     
     os.chdir(path)

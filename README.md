@@ -7,7 +7,13 @@ pip3 install flask-creator
 
 - create a new flask application :
 
-flask-creator create [name of your application]  
+flask-creator create --app [name of your application]  
+
+
+
+- create requirements.txt file : 
+
+flask-creator generate --require
 
 
 
@@ -29,4 +35,4 @@ flask-creator install [root of you application (1)]
 
 # Warning 
 
-This is an early. You need to have pip3 installed and python3-venv. It will be change in a near futur
+This is an early. 
