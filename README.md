@@ -23,7 +23,7 @@ flask-creator run # run your flask application (1)
 
 flask-creator install # install the dependencies specified in the setup.py of your application
 
-flask-creator generate --requie # create the requirements.txt of your application 
+flask-creator generate --require # create the requirements.txt of your application 
 ```
 
 ## Contributing
