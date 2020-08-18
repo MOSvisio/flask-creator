@@ -1,40 +1,35 @@
-# Installing
+# flask-creator
 
-Install and update with pip :
+flask-creator is a CLI for creating Flask application easily.
+
+## Installation
+
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install foobar.
+
+```bash
+pip install flask-creator
 pip3 install flask-creator
-
-# How to use 
-
-- create a new flask application :
-
-flask-creator create --app [name of your application]  
+```
 
 
-- create a new simple html page :
+## Usage
 
-flask-creator create --page [name of your page]  
+```bash
+flask-creator create --app appName # create a new flask application 
 
+flask-creator create --page pageName # create a basic html page 
 
+flask-creator run # run your flask application (1)
 
-- create requirements.txt file : 
+flask-creator install # install the dependencies specified in the setup.py of your application
 
-flask-creator generate --require
+flask-creator generate --requie # create the requirements.txt of your application 
+```
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+Please make sure to update tests as appropriate.
 
-- run your flask application (run this command from the folder containing setup.py):
-
-flask-creator run 
-
-
-
-- install the dependance defined in the setup.py file of your flask application (run this command from the folder containing setup.py):
-
-flask-creator install 
-
-
-
-
-# Warning 
-
-This is an early. 
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
