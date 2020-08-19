@@ -26,6 +26,20 @@ flask-creator install # install the dependencies specified in the setup.py of yo
 flask-creator generate --require # create the requirements.txt of your application 
 ```
 
+## New project directory tree 
+
+```
+├── example
+│   ├── __init__.py
+│   └── pages
+│       └── index.html
+├── Procfile
+├── requirements.txt
+├── run.sh
+├── setup.py
+└── venv
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
